@@ -18,4 +18,5 @@ Application for dog owners.
 ### Info
 
 - The data is stored in a MySQL database
+- database access data is saved in the local .env file as variables
 
