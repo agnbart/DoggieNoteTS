@@ -32,4 +32,10 @@ export class DogRecord {
         const [rows] = await connection.execute<DogRecordDB[]>('SELECT * FROM dogs');
         return rows.map((row) => new DogRecord(row));
     }
+
+    static async getOne(id: string): Promise<DogRecord>{
+         const connection = await connectToDatabase();
+         const [row] = await connection.execute<DogRecordDB[]>('SELECT * FROM dogs WHERE id = ?', [id]);
+         return row[0]
+    }
 }
