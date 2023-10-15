@@ -1,10 +1,12 @@
 import {Router} from "express";
+import {DogRecord} from "../records/dog-record";
 
 export const dogRouter = Router();
 
 dogRouter
-    .get('/', (req, res) => {
-        res.send("Hello on dog site!");
+    .get('/', async (req, res) => {
+        const dogs = await DogRecord.getAllDogs();
+        res.status(200).json(dogs);
     })
 
     .post('/', (req, res) => {
