@@ -38,7 +38,7 @@ export class DogRecord {
     static async getOne(id: string): Promise<DogRecord> {
         const connection = await connectToDatabase();
         const [row] = await connection.execute<DogRecordDB[]>('SELECT * FROM dogs WHERE id = ?', [id]);
-        return row[0]
+        return row[0];
     }
 
     static async addDog(obj: DogRecord): Promise<string> {
@@ -47,5 +47,15 @@ export class DogRecord {
         const [result] = await connection.execute<OkPacket>('INSERT INTO dogs (id, name, kennel_name, official_name, date_of_birth) VALUES (?, ?, ?, ?, ?)', [uuid(), name, kennel_name, official_name, date_of_birth]);
         const insertId = result.insertId;
         return insertId.toString();
+    }
+
+    static async updateDog(id: string, obj: DogRecord): Promise<DogRecord> {
+        const connection = await connectToDatabase();
+        const {name, kennel_name, official_name, date_of_birth} = obj;
+        const [result] = await connection.execute<OkPacket>('UPDATE dogs SET name = ?, kennel_name = ?, official_name = ?, date_of_birth = ? WHERE id = ?', [name, kennel_name, official_name, date_of_birth, id]);
+        if (result.affectedRows === 0) {
+            console.log(`Record ${id} not found`);
+        }
+        return DogRecord.getOne(id);
     }
 }
