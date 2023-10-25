@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import * as request from 'supertest';
 import { dbConfig } from "../db/db-config";
 
 let server: any;

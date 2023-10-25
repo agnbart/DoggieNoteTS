@@ -1,14 +1,32 @@
 import {Router} from "express";
+import {DogRecord} from "../records/dog-record";
 
 export const dogRouter = Router();
 
 dogRouter
-    .get('/', (req, res) => {
-        res.send("Hello on dog site!");
+    .get('/', async (req, res) => {
+        try {
+            const dogs = await DogRecord.getAllDogs();
+            res.status(200).json(dogs);
+        } catch (err) {
+            res.status(500).json({error: 'Internal Server Error'});
+        }
     })
 
-    .post('/', (req, res) => {
+    .get('/:id', async (req, res) => {
+        const id = req.params.id;
+        const dog = await DogRecord.getOne(id);
+        res.status(200).json(dog)
 
+    })
+
+    .post('/', async (req, res) => {
+        try {
+            const id = await DogRecord.addDog(req.body);
+            res.status(200).json(req.body);
+        } catch (err) {
+            console.log(err);
+        }
     })
 
     .put('/:id', (req, res) => {
