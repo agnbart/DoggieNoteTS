@@ -26,11 +26,22 @@ dogRouter
             res.status(200).json(req.body);
         } catch (err) {
             console.log(err);
+            res.status(500).json({error: 'Internal Server Error'});
         }
     })
 
-    .put('/:id', (req, res) => {
-
+    .put('/:id', async (req, res) => {
+        try {
+            const updatedRecord = await DogRecord.updateDog(req.params.id, req.body);
+            if (updatedRecord) {
+                res.status(200).json(updatedRecord);
+            } else {
+                res.status(404).json({error: 'Record not found'});
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({error: 'Internal Server Error'});
+        }
     })
 
     .delete('/:id', (req, res) => {
