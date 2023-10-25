@@ -1,7 +1,22 @@
-import * as mysql from "mysql2/promise";
-import {dbConfig} from "../db/db-config";
+import * as mysql from 'mysql2/promise';
+import { dbConfig } from '../db/db-config';
 
-export async function connectToDatabase() {
-    const connection = await mysql.createConnection(dbConfig);
-    return connection;
+let pool: mysql.Pool;
+
+export async function connectToDatabase(): Promise<mysql.Pool> {
+    pool = await mysql.createPool(dbConfig);
+    return pool;
+}
+
+export async function disconnectFromDatabase(): Promise<void> {
+    try {
+        if (pool) {
+            await pool.end(); // Zamykanie połączenia z bazą danych
+            console.log('Disconnected from the database.');
+        } else {
+            console.log('No active connection to close.');
+        }
+    } catch (error) {
+        console.error('Error disconnecting from the database:', error);
+    }
 }
