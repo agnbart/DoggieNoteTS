@@ -1,66 +1,66 @@
 import {Router} from "express";
 import {DogRecord} from "../records/dog-record";
+import {ValidationError} from "../utils/error";
 
 export const dogRouter = Router();
 
 dogRouter
-    .get('/', async (req, res) => {
+    .get('/', async (req, res, next) => {
         try {
             const dogs = await DogRecord.getAllDogs();
             res.status(200).json(dogs);
         } catch (err) {
-            res.status(500).json({error: 'Internal Server Error'});
+            next(err);
         }
     })
 
-    .get('/:id', async (req, res) => {
+    .get('/:id', async (req, res, next) => {
         try {
             const dog = await DogRecord.getOne(req.params.id);
             if (dog) {
                 res.status(200).json(dog);
             } else {
-                res.status(404).json({error: 'Record not found'});
+                const error = new ValidationError('Record not found');
+                next(error);
             }
         } catch (err) {
-            res.status(500).json({error: 'Internal Server Error'});
+            next(err);
         }
     })
 
-    .post('/', async (req, res) => {
+    .post('/', async (req, res, next) => {
         try {
             const id = await DogRecord.addDog(req.body);
             res.status(201).json(req.body);
         } catch (err) {
-            console.log(err);
-            res.status(500).json({error: 'Internal Server Error'});
+            next(err);
         }
     })
 
-    .put('/:id', async (req, res) => {
+    .put('/:id', async (req, res, next) => {
         try {
             const updatedRecord = await DogRecord.updateDog(req.params.id, req.body);
             if (updatedRecord) {
                 res.status(201).json(updatedRecord);
             } else {
-                res.status(404).json({error: 'Record not found'});
+                const error = new ValidationError('Record not found');
+                next(error);
             }
         } catch (err) {
-            console.log(err);
-            res.status(500).json({error: 'Internal Server Error'});
+            next(err);
         }
     })
 
-    .delete('/:id', async (req, res) => {
+    .delete('/:id', async (req, res, next) => {
         try {
             await DogRecord.deleteDog(req.params.id);
             if (req.params.id) {
                 res.status(204);
             } else {
-                res.status(404).json({error: 'Record not found'});
+                const error = new ValidationError('Record not found');
+                next(error);
             }
-
         } catch (err) {
-            console.log(err);
-            res.status(500).json({error: 'Internal Server Error'});
+            next(err);
         }
     })
