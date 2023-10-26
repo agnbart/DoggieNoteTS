@@ -1,6 +1,7 @@
 import * as express from 'express';
 import {homeRouter} from "./routers/home";
 import {dogRouter} from "./routers/dog";
+import {handleError} from "./utils/error";
 
 export const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/', homeRouter)
 app.use('/dog', dogRouter);
 
+app.use(handleError);
 
 app.listen(PORT,() => {
     console.log(`Server listening on http://localhost:${PORT}`)
