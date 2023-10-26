@@ -14,16 +14,22 @@ dogRouter
     })
 
     .get('/:id', async (req, res) => {
-        const id = req.params.id;
-        const dog = await DogRecord.getOne(id);
-        res.status(200).json(dog)
-
+        try {
+            const dog = await DogRecord.getOne(req.params.id);
+            if (dog) {
+                res.status(200).json(dog);
+            } else {
+                res.status(404).json({error: 'Record not found'});
+            }
+        } catch (err) {
+            res.status(500).json({error: 'Internal Server Error'});
+        }
     })
 
     .post('/', async (req, res) => {
         try {
             const id = await DogRecord.addDog(req.body);
-            res.status(200).json(req.body);
+            res.status(201).json(req.body);
         } catch (err) {
             console.log(err);
             res.status(500).json({error: 'Internal Server Error'});
@@ -34,7 +40,7 @@ dogRouter
         try {
             const updatedRecord = await DogRecord.updateDog(req.params.id, req.body);
             if (updatedRecord) {
-                res.status(200).json(updatedRecord);
+                res.status(201).json(updatedRecord);
             } else {
                 res.status(404).json({error: 'Record not found'});
             }
@@ -44,6 +50,17 @@ dogRouter
         }
     })
 
-    .delete('/:id', (req, res) => {
+    .delete('/:id', async (req, res) => {
+        try {
+            await DogRecord.deleteDog(req.params.id);
+            if (req.params.id) {
+                res.status(204);
+            } else {
+                res.status(404).json({error: 'Record not found'});
+            }
 
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({error: 'Internal Server Error'});
+        }
     })

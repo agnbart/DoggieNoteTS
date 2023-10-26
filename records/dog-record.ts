@@ -58,4 +58,13 @@ export class DogRecord {
         }
         return DogRecord.getOne(id);
     }
+
+    static async deleteDog(id: string): Promise<string> {
+        const connection = await connectToDatabase();
+        const [result] = await connection.execute<OkPacket>('DELETE FROM dogs WHERE id = ? ', [id]);
+        if (result.affectedRows === 0) {
+            console.log(`Record ${id} not found`);
+        }
+        return id;
+    }
 }
